@@ -2,7 +2,9 @@ from typing import List
 
 from odoo import fields, models
 
-from odoo_typing_classes_generator.tests.fake_module_1.typing import ResCountry
+from odoo_typing_classes_generator.tests.fake_module_1.typing import (
+    models as odoo_typing,
+)
 
 
 class FakeModel1(models.Model):
@@ -14,7 +16,7 @@ class FakeModel1(models.Model):
     a_related_field = fields.Char(related="many_to_one_field_id.name")
     a_many_to_one_field = fields.Many2one("res.company")
 
-    def a_documented_function(self, _an_argument: int = 1) -> ResCountry:
+    def a_documented_function(self, _an_argument: int = 1) -> odoo_typing.ResCountry:
         return self.a_many_to_one_field.country_id
 
     def an_undocumented_method(self, _an_argument=""):
