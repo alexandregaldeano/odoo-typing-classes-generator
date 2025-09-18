@@ -1,0 +1,1336 @@
+import datetime
+from typing import (
+    Any,
+    Callable,
+    Collection,
+    Generic,
+    Iterator,
+    List,
+    Optional,
+    Set,
+    Tuple,
+    TypeVar,
+    Union,
+)
+
+from dateutil.relativedelta import relativedelta
+from urllib3.connectionpool import HTTPConnectionPool
+
+from odoo.api import Environment
+from odoo.fields import Field
+from odoo.sql_db import Cursor
+
+T = TypeVar("T")
+
+Domain = List[Union[str, tuple]]
+
+class AbstractModel(Generic[T]):
+    create_date: datetime.datetime
+    env: Environment
+    id: int
+    ids: List[int]
+    write_date: datetime.datetime
+
+    @classmethod
+    def _browse(
+        cls,
+        env: Environment,
+        ids: Tuple[int],
+        prefetch_ids: Collection[int],
+    ) -> T:
+        pass
+
+    @classmethod
+    def _build_model(
+        cls,
+        pool: HTTPConnectionPool,
+        cr: Cursor,
+    ):
+        pass
+
+    @classmethod
+    def _build_model_attributes(
+        cls,
+        pool: HTTPConnectionPool,
+    ):
+        pass
+
+    @classmethod
+    def _build_model_check_base(
+        cls,
+    ):
+        pass
+
+    @classmethod
+    def _build_model_check_parent(
+        model_class,  # noqa: N804
+        cls,
+        parent_class,
+    ):
+        pass
+
+    @classmethod
+    def _init_constraints_onchanges(
+        cls,
+        foo: Any = None,
+    ):
+        pass
+
+    @classmethod
+    def _patch_method(
+        cls,
+        name: str,
+        method: Callable,
+    ):
+        pass
+
+    @classmethod
+    def _revert_method(
+        cls,
+        name: str,
+    ):
+        pass
+
+    @classmethod
+    def clear_caches(
+        cls,
+    ):
+        pass
+
+    @classmethod
+    def is_transient(
+        cls,
+    ):
+        pass
+
+    def __add__(
+        self,
+        other: T,
+    ) -> T:
+        pass
+
+    def __and__(
+        self,
+        other: T,
+    ) -> T:
+        pass
+
+    def __bool__(
+        self,
+    ) -> bool:
+        pass
+
+    def __contains__(
+        self,
+        item: T,
+    ) -> bool:
+        pass
+
+    def __eq__(
+        self,
+        other: T,
+    ) -> bool:
+        pass
+
+    def __ge__(
+        self,
+        other: T,
+    ) -> bool:
+        pass
+
+    def __getitem__(
+        self,
+        key: Any,
+    ) -> T:
+        pass
+
+    def __gt__(
+        self,
+        other: T,
+    ) -> bool:
+        pass
+
+    def __hash__(
+        self,
+    ) -> int:
+        pass
+
+    def __int__(
+        self,
+    ) -> int:
+        pass
+
+    def __init__(
+        self,
+        pool: HTTPConnectionPool,
+        cr: Cursor,
+    ):
+        pass
+
+    def __iter__(
+        self,
+    ) -> Iterator[T]:
+        pass
+
+    def __le__(
+        self,
+        other: T,
+    ) -> bool:
+        pass
+
+    def __len__(
+        self,
+    ) -> int:
+        pass
+
+    def __lt__(
+        self,
+        other: T,
+    ) -> bool:
+        pass
+
+    def __nonzero__(
+        self,
+    ) -> bool:
+        pass
+
+    def __or__(
+        self,
+        other: T,
+    ) -> bool:
+        pass
+
+    def __repr__(
+        self,
+    ) -> str:
+        pass
+
+    def __setitem__(
+        self,
+        key: Any,
+        value: Any,
+    ):
+        pass
+
+    def __sub__(
+        self,
+        other: T,
+    ) -> T:
+        pass
+
+    def _add_fake_fields(
+        self,
+        fields: dict,
+    ) -> dict:
+        pass
+
+    def _add_field(
+        self,
+        name: str,
+        field: Field,
+    ):
+        pass
+
+    def _add_inherited_fields(
+        self,
+    ) -> None:
+        pass
+
+    def _add_magic_fields(
+        self,
+    ) -> None:
+        pass
+
+    def _add_missing_default_values(
+        self,
+        values: dict,
+    ) -> dict:
+        pass
+
+    def _add_sql_constraints(
+        self,
+    ) -> None:
+        pass
+
+    def _apply_ir_rules(
+        self,
+        query,
+        mode: str = "read",
+    ):
+        pass
+
+    def _auto_init(
+        self,
+    ) -> None:
+        pass
+
+    def _check_company(
+        self,
+        fnames: Optional[List[str]] = None,
+    ) -> None:
+        pass
+
+    def _check_concurrency(
+        self,
+    ) -> None:
+        pass
+
+    def _check_m2m_recursion(
+        self,
+        field_name: str,
+    ) -> bool:
+        pass
+
+    def _check_qorder(
+        self,
+        word: str,
+    ) -> bool:
+        pass
+
+    def _check_recursion(
+        self,
+        parent: Optional[str] = None,
+    ) -> bool:
+        pass
+
+    def _check_removed_columns(
+        self,
+        log: bool = False,
+    ):
+        pass
+
+    def _compute_display_name(
+        self,
+    ) -> None:
+        pass
+
+    def _compute_field_value(
+        self,
+        field: Field,
+    ):
+        pass
+
+    def _convert_records(
+        self,
+        records: T,
+        log: Callable[[T], None] = lambda a: None,
+    ) -> List[Tuple[Optional[int], Optional[str], dict]]:
+        pass
+
+    def _convert_to_record(
+        self,
+        values: dict,
+    ) -> dict:
+        pass
+
+    def _convert_to_write(
+        self,
+        values: dict,
+    ) -> dict:
+        pass
+
+    def _create(
+        self,
+        data_list: List[dict],
+    ) -> T:
+        pass
+
+    def _create_parent_columns(
+        self,
+    ) -> None:
+        pass
+
+    def _dependent_fields(
+        self,
+        field: Field,
+    ) -> Iterator[Field]:
+        pass
+
+    def _execute_sql(
+        self,
+    ) -> None:
+        pass
+
+    def _export_rows(
+        self,
+        fields: List[List[str]],
+        *,
+        _is_toplevel_call: bool = True,
+    ) -> List[list]:
+        pass
+
+    def _extract_records(
+        self,
+        fields_: List[List[str]],
+        data: List[Any],
+        log: Callable[[T], None] = lambda a: None,
+        limit: Union[int, float] = float(
+            "inf",
+        ),
+    ):
+        pass
+
+    def _fetch_field(
+        self,
+        field: Field,
+    ) -> None:
+        pass
+
+    def _fields_view_get(
+        self,
+        view_id: Optional[int] = None,
+        view_type: str = "form",
+        toolbar: bool = False,
+        submenu: False = False,
+    ) -> dict:
+        pass
+
+    def _filter_access_rules(
+        self,
+        operation: str,
+    ) -> T:
+        pass
+
+    def _filter_access_rules_python(
+        self,
+        operation: str,
+    ) -> T:
+        pass
+
+    def _flush_search(
+        self,
+        domain: Domain,
+        fields: Optional[List[str]] = None,
+        order: Optional[str] = None,
+        seen: Optional[Set[str]] = None,
+    ) -> None:
+        pass
+
+    # TODO
+    def _generate_m2o_order_by(
+        self,
+        alias,
+        order_field,
+        query,
+        reverse_direction,
+        seen,
+    ):
+        pass
+
+    # TODO
+    def _generate_order_by(
+        self,
+        order_spec,
+        query,
+    ):
+        pass
+
+    # TODO
+    def _generate_order_by_inner(
+        self,
+        alias,
+        order_spec,
+        query,
+        reverse_direction=False,
+        seen=None,
+    ):
+        pass
+
+    # TODO
+    def _generate_translated_field(
+        self,
+        table_alias,
+        field,
+        query,
+    ):
+        pass
+
+    # TODO
+    def _get_default_calendar_view(
+        self,
+    ):
+        pass
+
+    # TODO
+    def _get_default_form_view(
+        self,
+    ):
+        pass
+
+    # TODO
+    def _get_default_graph_view(
+        self,
+    ):
+        pass
+
+    # TODO
+    def _get_default_kanban_view(
+        self,
+    ):
+        pass
+
+    # TODO
+    def _get_default_pivot_view(
+        self,
+    ):
+        pass
+
+    # TODO
+    def _get_default_search_view(
+        self,
+    ):
+        pass
+
+    # TODO
+    def _get_default_tree_view(
+        self,
+    ):
+        pass
+
+    # TODO
+    def _get_external_ids(
+        self,
+    ):
+        pass
+
+    # TODO
+    def _get_placeholder_filename(
+        self,
+        field=None,
+    ):
+        pass
+
+    # TODO
+    def _get_xml_ids(
+        self,
+    ):
+        pass
+
+    # TODO
+    def _has_onchange(
+        self,
+        field,
+        other_fields,
+    ):
+        pass
+
+    # TODO
+    def _in_cache_without(
+        self,
+        field,
+        limit=1000,
+    ):
+        pass
+
+    # TODO
+    def _inherits_check(
+        self,
+    ):
+        pass
+
+    # TODO
+    def _inherits_join_add(
+        self,
+        current_model,
+        parent_model_name,
+        query,
+    ):
+        pass
+
+    # TODO
+    def _inherits_join_calc(
+        self,
+        alias,
+        fname,
+        query,
+    ):
+        pass
+
+    # TODO
+    def _init_column(
+        self,
+        column_name,
+    ):
+        pass
+
+    # TODO
+    def _is_an_ordinary_table(
+        self,
+    ):
+        pass
+
+    # TODO
+    def _load_records(
+        self,
+        data_list,
+        update=False,
+    ):
+        pass
+
+    # TODO
+    def _load_records_create(
+        self,
+        values,
+    ):
+        pass
+
+    # TODO
+    def _load_records_write(
+        self,
+        values,
+    ):
+        pass
+
+    # TODO
+    def _mapped_cache(
+        self,
+        name_seq,
+    ):
+        pass
+
+    # TODO
+    def _mapped_func(
+        self,
+        func,
+    ):
+        pass
+
+    # TODO
+    def _modified_triggers(
+        self,
+        tree,
+        create=False,
+    ):
+        pass
+
+    # TODO
+    def _name_search(
+        self,
+        name="",
+        args=None,
+        operator="ilike",
+        limit=100,
+        name_get_uid=None,
+    ):
+        pass
+
+    # TODO
+    def _onchange_eval(
+        self,
+        field_name,
+        onchange,
+        result,
+    ):
+        pass
+
+    # TODO
+    def _onchange_spec(
+        self,
+        view_info=None,
+    ):
+        pass
+
+    # TODO
+    def _parent_store_compute(
+        self,
+    ):
+        pass
+
+    # TODO
+    def _parent_store_create(
+        self,
+    ):
+        pass
+
+    # TODO
+    def _parent_store_update(
+        self,
+    ):
+        pass
+
+    # TODO
+    def _parent_store_update_prepare(
+        self,
+        vals,
+    ):
+        pass
+
+    # TODO
+    def _pop_field(
+        self,
+        name,
+    ):
+        pass
+
+    # TODO
+    def _populate(
+        self,
+        size,
+    ):
+        pass
+
+    # TODO
+    def _populate_factories(
+        self,
+    ):
+        pass
+
+    # TODO
+    def _prepare_setup(
+        self,
+    ):
+        pass
+
+    # TODO
+    def _read(
+        self,
+        fields,
+    ):
+        pass
+
+    # TODO
+    def _read_format(
+        self,
+        fnames,
+        load="_classic_read",
+    ):
+        pass
+
+    # TODO
+    def _read_group_expand_full(
+        self,
+        groups,
+        domain,
+        order,
+    ):
+        pass
+
+    # TODO
+    def _read_group_fill_results(
+        self,
+        domain,
+        groupby,
+        remaining_groupbys,
+        aggregated_fields,
+        count_field,
+        read_group_result,
+        read_group_order=None,
+    ):
+        pass
+
+    # TODO
+    def _read_group_fill_temporal(
+        self,
+        data,
+        groupby,
+        aggregated_fields,
+        annotated_groupbys,
+        interval=relativedelta(months=1),  # noqa: B008
+    ):
+        pass
+
+    # TODO
+    def _read_group_format_result(
+        self,
+        data,
+        annotated_groupbys,
+        groupby,
+        domain,
+    ):
+        pass
+
+    # TODO
+    def _read_group_prepare(
+        self,
+        orderby,
+        aggregated_fields,
+        annotated_groupbys,
+        query,
+    ):
+        pass
+
+    # TODO
+    def _read_group_prepare_data(
+        self,
+        key,
+        value,
+        groupby_dict,
+    ):
+        pass
+
+    # TODO
+    def _read_group_process_groupby(
+        self,
+        gb,
+        query,
+    ):
+        pass
+
+    # TODO
+    def _read_group_raw(
+        self,
+        domain,
+        fields,
+        groupby,
+        offset=0,
+        limit=None,
+        orderby=False,
+        lazy=True,
+    ):
+        pass
+
+    # TODO
+    def _read_group_resolve_many2one_fields(
+        self,
+        data,
+        fields,
+    ):
+        pass
+
+    # TODO
+    def _rec_name_fallback(
+        self,
+    ):
+        pass
+
+    # TODO
+    def _register_hook(
+        self,
+    ):
+        pass
+
+    # TODO
+    def _search(
+        self,
+        args,
+        offset=0,
+        limit=None,
+        order=None,
+        count=False,
+        access_rights_uid=None,
+    ):
+        pass
+
+    # TODO
+    def _setup_base(
+        self,
+    ):
+        pass
+
+    # TODO
+    def _setup_complete(
+        self,
+    ):
+        pass
+
+    # TODO
+    def _setup_fields(
+        self,
+    ):
+        pass
+
+    # TODO
+    def _table_has_rows(
+        self,
+    ):
+        pass
+
+    # TODO
+    def _unregister_hook(
+        self,
+    ):
+        pass
+
+    # TODO
+    def _update_cache(
+        self,
+        values,
+        validate=True,
+    ):
+        pass
+
+    # TODO
+    def _valid_field_parameter(
+        self,
+        field,
+        name,
+    ):
+        pass
+
+    # TODO
+    def _validate_fields(
+        self,
+        field_names,
+        excluded_names=(),
+    ):
+        pass
+
+    # TODO
+    def _where_calc(
+        self,
+        domain,
+        active_test=True,
+    ):
+        pass
+
+    # TODO
+    def _write(
+        self,
+        vals,
+    ):
+        pass
+
+    # TODO
+    def action_archive(
+        self,
+    ):
+        pass
+
+    # TODO
+    def action_unarchive(
+        self,
+    ):
+        pass
+
+    def browse(
+        self,
+        ids: Union[int, List[int]],
+    ) -> T:
+        pass
+
+    # TODO
+    def check_access_rights(
+        self,
+        operation,
+        raise_exception=True,
+    ):
+        pass
+
+    # TODO
+    def check_access_rule(
+        self,
+        operation,
+    ):
+        pass
+
+    # TODO
+    def check_field_access_rights(
+        self,
+        operation,
+        fields,
+    ):
+        pass
+
+    # TODO
+    def compute_concurrency_field(
+        self,
+    ):
+        pass
+
+    # TODO
+    def compute_concurrency_field_with_access(
+        self,
+    ):
+        pass
+
+    # TODO
+    def concat(
+        self,
+        *args,
+    ):
+        pass
+
+    def copy(  # pylint: disable=method-required-super
+        self,
+        default: Optional[dict] = None,
+    ) -> T:
+        pass
+
+    # TODO
+    def copy_data(
+        self,
+        default=None,
+    ):
+        pass
+
+    def copy_translations(
+        old,  # noqa: N805
+        new,
+        excluded=(),
+    ):
+        pass
+
+    def create(self, vals_list: Union[List[dict], dict]) -> T:  # pylint: disable=method-required-super
+        pass
+
+    # TODO
+    def default_get(  # pylint: disable=method-required-super
+        self,
+        fields_list,
+    ):
+        pass
+
+    # TODO
+    def ensure_one(
+        self,
+    ):
+        pass
+
+    def exists(
+        self,
+    ) -> T:
+        pass
+
+    # TODO
+    def export_data(
+        self,
+        fields_to_export,
+    ):
+        pass
+
+    # TODO
+    def fields_get(
+        self,
+        allfields=None,
+        attributes=None,
+    ):
+        pass
+
+    # TODO
+    def fields_get_keys(
+        self,
+    ):
+        pass
+
+    # TODO
+    def fields_view_get(
+        self,
+        view_id=None,
+        view_type="form",
+        toolbar=False,
+        submenu: Union["Model", bool] = False,
+    ):
+        pass
+
+    def filtered(
+        self,
+        func: Union[Callable[[T], bool], str],
+    ) -> T:
+        pass
+
+    # TODO
+    def filtered_domain(
+        self,
+        domain,
+    ):
+        pass
+
+    # TODO
+    def flush(
+        self,
+        fnames=None,
+        records=None,
+    ):
+        pass
+
+    # TODO
+    def get_access_action(
+        self,
+        access_uid=None,
+    ):
+        pass
+
+    # TODO
+    def get_base_url(
+        self,
+    ):
+        pass
+
+    # TODO
+    def get_empty_list_help(
+        self,
+        help,
+    ):
+        pass
+
+    # TODO
+    def get_external_id(
+        self,
+    ):
+        pass
+
+    # TODO
+    def get_formview_action(
+        self,
+        access_uid=None,
+    ):
+        pass
+
+    # TODO
+    def get_formview_id(
+        self,
+        access_uid=None,
+    ):
+        pass
+
+    # TODO
+    def get_metadata(
+        self,
+    ):
+        pass
+
+    # TODO
+    def get_xml_id(
+        self,
+    ):
+        pass
+
+    # TODO
+    def init(
+        self,
+    ):
+        pass
+
+    # TODO
+    def invalidate_cache(
+        self,
+        fnames=None,
+        ids=None,
+    ):
+        pass
+
+    # TODO
+    def load(
+        self,
+        fields,
+        data,
+    ):
+        pass
+
+    # TODO
+    def load_views(
+        self,
+        views,
+        options=None,
+    ):
+        pass
+
+    # TODO
+    def mapped(
+        self,
+        func,
+    ):
+        pass
+
+    # TODO
+    def modified(
+        self,
+        fnames,
+        create=False,
+        before=False,
+    ):
+        pass
+
+    def name_create(
+        self,
+        name: str,
+    ) -> T:
+        pass
+
+    def name_get(
+        self,
+    ) -> List[Tuple[int, str]]:
+        pass
+
+    def name_search(
+        self,
+        name: str = "",
+        args: Optional[Domain] = None,
+        operator: str = "ilike",
+        limit: int = 100,
+    ) -> List[Tuple[int, str]]:
+        pass
+
+    def new(  # pylint: disable=dangerous-default-value
+        self,
+        values: dict = {},  # noqa: B006
+        origin: Optional["Model"] = None,
+        ref: Optional[str] = None,
+    ):
+        pass
+
+    def onchange(
+        self, values: dict, field_name: Union[str, List[str]], field_onchange: dict
+    ) -> Optional[dict]:
+        pass
+
+    def read(  # pylint: disable=method-required-super
+        self,
+        fields: Optional[List[str]] = None,
+        load: str = "_classic_read",
+    ) -> List[dict]:
+        pass
+
+    def read_group(
+        self,
+        domain: Domain,
+        fields: List[str],
+        groupby: List[str],
+        offset: int = 0,
+        limit: Optional[int] = None,
+        orderby: Optional[str] = False,
+        lazy: bool = True,
+    ) -> List[dict]:
+        pass
+
+    def recompute(
+        self,
+        fnames: Optional[List[str]] = None,
+        records: Optional["Model"] = None,
+    ) -> None:
+        pass
+
+    def refresh(
+        self,
+    ) -> None:
+        pass
+
+    def search(
+        self,
+        args: Domain,
+        offset: int = 0,
+        limit: Optional[int] = None,
+        order: Optional[str] = None,
+        count: bool = False,
+    ) -> T:
+        pass
+
+    def search_count(
+        self,
+        args: Domain,
+    ) -> int:
+        pass
+
+    def search_read(
+        self,
+        domain: Optional[Domain] = None,
+        fields: Union[List[str], tuple, None] = None,
+        offset: int = 0,
+        limit: Optional[int] = None,
+        order: Optional[str] = None,
+    ) -> List[dict]:
+        pass
+
+    def sorted(
+        self,
+        key: Optional[Union[Callable[[T], Any], str]],
+        reverse: bool,
+    ) -> T:
+        pass
+
+    def sudo(
+        self,
+        flag: bool = True,
+    ) -> T:
+        pass
+
+    def toggle_active(
+        self,
+    ) -> None:
+        pass
+
+    def union(  # pylint: disable=method-required-super
+        self,
+        *args: "Model",
+    ) -> None:
+        pass
+
+    def unlink(  # pylint: disable=method-required-super
+        self,
+    ) -> bool:
+        pass
+
+    def update(
+        self,
+        values: dict,
+    ) -> None:
+        pass
+
+    def user_has_groups(
+        self,
+        groups: str,
+    ) -> bool:
+        pass
+
+    def view_header_get(
+        self,
+        view_id=None,
+        view_type: str = "form",
+    ) -> Union[str, bool]:
+        pass
+
+    def view_init(self, fields_list: List[str]) -> None:
+        pass
+
+    def write(  # pylint: disable=method-required-super
+        self,
+        vals: dict,
+    ) -> bool:
+        pass
+
+    def with_company(
+        self,
+        company: "ResCompany",  # noqa: F821
+    ) -> T:
+        pass
+
+    def with_context(
+        self,
+        *args,
+        **kwargs,
+    ) -> T:
+        pass
+
+    def with_env(
+        self,
+        env: Environment,
+    ) -> T:
+        pass
+
+    def with_prefetch(
+        self,
+        prefetch_ids: Optional[List[int]] = None,
+    ) -> T:
+        pass
+
+    def with_user(
+        self,
+        user: "ResUsers",  # noqa: F821
+    ) -> T:
+        pass
+
+class Model(AbstractModel[T]):
+    pass
+
+class TransientModel(Model[T]):
+    # TODO
+    def _transient_clean_old_rows(
+        self,
+        max_count,
+    ):
+        pass
+
+    # TODO
+    def _transient_clean_rows_older_than(
+        self,
+        seconds,
+    ):
+        pass
+
+    # TODO
+    def _transient_vacuum(
+        self,
+    ):
+        pass
+
+    # TODO

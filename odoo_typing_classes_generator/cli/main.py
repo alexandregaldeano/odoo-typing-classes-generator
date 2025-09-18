@@ -23,10 +23,14 @@ _logger = logging.getLogger(__name__)
     required=True,
     help="Path where the modules are location, relative to the current working directory",
 )
-def main(modules: str, addons_path: str):
+@click.option(
+    "--stub-mode",
+    is_flag=True,
+)
+def main(modules: str, addons_path: str, stub_mode: bool):
     for module in modules.split(","):
         _logger.info(f"[{module}] Generating typing classes...")
-        Generator(addons_path).generate(module)
+        Generator(addons_path, stub_mode).generate(module)
         _logger.info(f"[{module}] Done generating typing classes.")
 
 

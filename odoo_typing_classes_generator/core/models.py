@@ -215,6 +215,8 @@ class FieldData:
             serialized_type = merged_models_data_by_odoo_model_name[
                 self.type
             ].unique_class_name
+            # We cannot use Literal[False] here, because when iterating over the field,
+            # the IDE wouldn't know which of the two types the elements have.
             serialized_type = f'Union["{serialized_type}", bool]'
         else:
             serialized_type = self.type.serialize()
@@ -277,7 +279,7 @@ class ModelData:
         self.is_base_definition = self.odoo_model_name not in self.inherited_model_names
 
     def get_class_definition(self) -> str:
-        return f'class {self.unique_class_name}(Model["{self.unique_class_name}"]):\n    pass\n'
+        return f"class {self.unique_class_name}:\n    pass\n"
 
     def get_stub_definition(
         self,
