@@ -109,18 +109,6 @@ wheels = [
 ]
 
 [[package]]
-name = "click-odoo"
-version = "1.5.0"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "click" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/f0/3e/cb8a9b93343156da971b61f5bb93e7fd3fa98f0d1fd795b167fd55873dad/click-odoo-1.5.0.tar.gz", hash = "sha256:71347906b00d67e7b11cdf43700bf24f282dd0dfe337d5d46a69d24ef483efda", size = 28916, upload-time = "2021-10-08T14:22:25.341Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/bf/22/78d25d45d86220b0a68d0678bd604cb42ebad1263938a7d251c437f34186/click_odoo-1.5.0-py2.py3-none-any.whl", hash = "sha256:2f110826c37ab0972b012e2d073d5e4bf876d636aeebbce940b7e910cfcf9edc", size = 16820, upload-time = "2021-10-08T14:22:23.044Z" },
-]
-
-[[package]]
 name = "colorama"
 version = "0.4.6"
 source = { registry = "https://pypi.org/simple" }
@@ -170,6 +158,12 @@ sdist = { url = "https://files.pythonhosted.org/packages/0f/d5/c66da9b79e5bdb124
 wheels = [
     { url = "https://files.pythonhosted.org/packages/07/6c/aa3f2f849e01cb6a001cd8554a88d4c77c5c1a31c95bdf1cf9301e6d9ef4/defusedxml-0.7.1-py2.py3-none-any.whl", hash = "sha256:a352e7e428770286cc899e2542b6cdaedb2b4953ff269a210103ec58f6198a61", size = 25604, upload-time = "2021-03-08T10:59:24.45Z" },
 ]
+
+[[package]]
+name = "docopt"
+version = "0.6.2"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/a2/55/8f8cab2afd404cf578136ef2cc5dfb50baa1761b68c9da1fb1e4eed343c9/docopt-0.6.2.tar.gz", hash = "sha256:49b3a825280bd66b3aa83585ef59c4a8c82f2c8a522dbe754a8bc8d08c85c491", size = 25901, upload-time = "2014-06-16T11:18:57.406Z" }
 
 [[package]]
 name = "docutils"
@@ -335,6 +329,18 @@ wheels = [
 ]
 
 [[package]]
+name = "num2words"
+version = "0.5.14"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "docopt" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/f6/58/ad645bd38b4b648eb2fc2ba1b909398e54eb0cbb6a7dbd2b4953e38c9621/num2words-0.5.14.tar.gz", hash = "sha256:b066ec18e56b6616a3b38086b5747daafbaa8868b226a36127e0451c0cf379c6", size = 218213, upload-time = "2024-12-17T20:17:10.191Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/d6/5b/545e9267a1cc080c8a1be2746113a063e34bcdd0f5173fd665a5c13cb234/num2words-0.5.14-py3-none-any.whl", hash = "sha256:1c8e5b00142fc2966fd8d685001e36c4a9911e070d1b120e1beb721fa1edb33d", size = 163525, upload-time = "2024-12-17T20:17:06.074Z" },
+]
+
+[[package]]
 name = "odoo"
 version = "14.0"
 source = { git = "https://github.com/odoo/odoo.git?branch=14.0#cc0060e889603eb2e47fa44a8a22a70d7d784185" }
@@ -377,7 +383,6 @@ name = "odoo-typing-classes-generator"
 source = { editable = "." }
 dependencies = [
     { name = "click" },
-    { name = "click-odoo" },
     { name = "lxml" },
     { name = "odoo" },
     { name = "psycopg2" },
@@ -390,6 +395,7 @@ dependencies = [
 [package.dev-dependencies]
 dev = [
     { name = "coverage" },
+    { name = "num2words" },
     { name = "pytest" },
     { name = "pytest-cov" },
 ]
@@ -397,7 +403,6 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "click", specifier = "==8.1.3" },
-    { name = "click-odoo", specifier = "==1.5.0" },
     { name = "lxml", specifier = "==4.5.0" },
     { name = "odoo", git = "https://github.com/odoo/odoo.git?branch=14.0" },
     { name = "psycopg2", specifier = "==2.9.10" },
@@ -410,6 +415,7 @@ requires-dist = [
 [package.metadata.requires-dev]
 dev = [
     { name = "coverage" },
+    { name = "num2words" },
     { name = "pytest", specifier = "==8.3.3" },
     { name = "pytest-cov", specifier = "==3.0.0" },
 ]
