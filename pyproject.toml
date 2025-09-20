@@ -7,11 +7,7 @@ description = "Tool to generate Odoo model type classes for better IDE support"
 readme = "README.md"
 keywords = ["odoo", "modules", "addons", "typing"]
 license = { file = "LICENSE" }
-classifiers = [
-  "License :: GNU Affero General Public License v3 (AGPLv3)",
-  "Programming Language :: Python :: 3",
-  "Framework :: Odoo",
-]
+classifiers = ["License: GNU Affero General Public License v3 (AGPLv3)"]
 dependencies = [
   "click==8.1.3",
   "psycopg2==2.9.10",
