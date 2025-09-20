@@ -19,10 +19,17 @@ jobs:
       - uses: actions/setup-python@v2
         with:
           python-version: 3.8
+      - name: Cache .venv
+        uses: actions/cache@v4
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-${{ hashFiles('uv.lock') }}
+          restore-keys: |
+            venv-${{ runner.os }}-
       - name: Install dependencies
         run: |
           pip install uv
-          uv sync --all-extras
+          uv sync --frozen --all-extras --dev
       - name: Run tests
         run: |
           uv run coverage run -m pytest -v odoo_typing_classes_generator/tests
