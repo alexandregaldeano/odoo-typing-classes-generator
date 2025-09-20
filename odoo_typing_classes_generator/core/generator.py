@@ -54,11 +54,8 @@ class Generator:
         "reference": str,
     }
 
-    def __init__(
-        self, addons_path: str, stub_mode: bool, generate_all_classes: bool = False
-    ):
+    def __init__(self, addons_path: str, generate_all_classes: bool = False):
         self.addons_path = Path(addons_path)
-        self.stub_mode = stub_mode
         self.generate_all_classes = generate_all_classes
 
         self.assets_path = Path(__file__).parent.parent / "assets"
@@ -488,30 +485,25 @@ class Generator:
         shutil.copy(self.assets_path / "base.py", typing_folder / "base.py")
         shutil.copy(self.assets_path / "base.pyi", typing_folder / "base.pyi")
 
-        if self.stub_mode:
-            models_path = typing_folder / "models.py"
-            if self.generate_all_classes:
-                with open(models_path, "w") as models_file:
-                    models_file.write(self._generate_class_file_content())
-            elif not models_path.exists():
-                with open(models_path, "w") as models_file:
-                    models_file.write(
-                        textwrap.dedent(
-                            """\
-                        # Add below the classes you want to use for typing,
-                        # see the documentation for more information
+        models_path = typing_folder / "models.py"
+        if self.generate_all_classes:
+            with open(models_path, "w") as models_file:
+                models_file.write(self._generate_class_file_content())
+        elif not models_path.exists():
+            with open(models_path, "w") as models_file:
+                models_file.write(
+                    textwrap.dedent(
+                        """\
+                    # Add below the classes you want to use for typing,
+                    # see the documentation for more information
 
-                        """
-                        )
+                    """
                     )
+                )
 
-            models_stubs_path = typing_folder / "models.pyi"
-            with open(models_stubs_path, "w") as models_stubs_file:
-                models_stubs_file.write(self._generate_stub_file_content())
-        else:
-            models_stubs_path = typing_folder / "models.py"
-            with open(models_stubs_path, "w") as models_stubs_file:
-                models_stubs_file.write(self._generate_stub_file_content())
+        models_stubs_path = typing_folder / "models.pyi"
+        with open(models_stubs_path, "w") as models_stubs_file:
+            models_stubs_file.write(self._generate_stub_file_content())
 
         init_path = typing_folder / "__init__.py"
         with open(init_path, "w") as init_file:

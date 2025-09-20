@@ -85,24 +85,9 @@ class TestGenerator(TestCase):
         ) as mock_get_addon_folder_path:
             yield mock_get_addon_folder_path
 
-    def test_load_models_data_class_mode(self):
+    def test_load_models_data(self):
         generator = TypingClassesGenerator(
             addons_path="odoo/addons/typing_classes_generator/tests",
-            stub_mode=False,
-        )
-        with self.mock_get_addon_package_name(), self.mock_get_addon_folder_path():
-            generator.generate("fake_module_1")
-            self.assertTrue(self.class_file_path.exists())
-            self.assertFalse(self.stub_file_path.exists())
-            with open(self.class_file_path, "r") as models_file:
-                models_file_content = models_file.read()
-                self.assertNotEqual(self._models_file_content(), models_file_content)
-            self._test_models_typing()
-
-    def test_load_models_data_stub_mode(self):
-        generator = TypingClassesGenerator(
-            addons_path="odoo/addons/typing_classes_generator/tests",
-            stub_mode=True,
         )
         with self.mock_get_addon_package_name(), self.mock_get_addon_folder_path():
             generator.generate("fake_module_1")
@@ -114,10 +99,9 @@ class TestGenerator(TestCase):
             shutil.move(str(self.stub_file_path), str(self.class_file_path))
             self._test_models_typing()
 
-    def test_load_models_data_stub_mode_generate_all_classes(self):
+    def test_load_models_data_generate_all_classes(self):
         generator = TypingClassesGenerator(
             addons_path="odoo/addons/typing_classes_generator/tests",
-            stub_mode=True,
             generate_all_classes=True,
         )
         with self.mock_get_addon_package_name(), self.mock_get_addon_folder_path():
