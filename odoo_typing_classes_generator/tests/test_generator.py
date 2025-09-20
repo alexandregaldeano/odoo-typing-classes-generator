@@ -29,19 +29,20 @@ class TestGenerator(TestCase):
         cls.class_file_path = cls.typing_folder_path / "models.py"
         cls.stub_file_path = cls.typing_folder_path / "models.pyi"
 
+    def _models_file_content(self):
+        return textwrap.dedent(
+            """\
+            class ResCountry:
+                pass
+
+            class FakeModel1:
+                pass
+            """
+        )
+
     def _reset_models_files(self):
         with open(self.class_file_path, "w") as models_file:
-            models_file.write(
-                textwrap.dedent(
-                    """\
-                class ResCountry:
-                    pass
-
-                class FakeModel1:
-                    pass
-                """
-                )
-            )
+            models_file.write(self._models_file_content())
         if self.stub_file_path.exists():
             os.remove(self.stub_file_path)
 
@@ -86,27 +87,55 @@ class TestGenerator(TestCase):
 
     def test_load_models_data_class_mode(self):
         generator = TypingClassesGenerator(
-            "odoo/addons/typing_classes_generator/tests", stub_mode=False
+            addons_path="odoo/addons/typing_classes_generator/tests",
+            stub_mode=False,
         )
         with self.mock_get_addon_package_name(), self.mock_get_addon_folder_path():
             generator.generate("fake_module_1")
             self.assertTrue(self.class_file_path.exists())
             self.assertFalse(self.stub_file_path.exists())
+            with open(self.class_file_path, "r") as models_file:
+                models_file_content = models_file.read()
+                self.assertNotEqual(self._models_file_content(), models_file_content)
             self._test_models_typing()
 
     def test_load_models_data_stub_mode(self):
         generator = TypingClassesGenerator(
-            "odoo/addons/typing_classes_generator/tests", stub_mode=True
+            addons_path="odoo/addons/typing_classes_generator/tests",
+            stub_mode=True,
         )
         with self.mock_get_addon_package_name(), self.mock_get_addon_folder_path():
             generator.generate("fake_module_1")
             self.assertTrue(self.class_file_path.exists())
             self.assertTrue(self.stub_file_path.exists())
+            with open(self.class_file_path, "r") as models_file:
+                models_file_content = models_file.read()
+                self.assertEqual(self._models_file_content(), models_file_content)
+            shutil.move(str(self.stub_file_path), str(self.class_file_path))
+            self._test_models_typing()
+
+    def test_load_models_data_stub_mode_generate_all_classes(self):
+        generator = TypingClassesGenerator(
+            addons_path="odoo/addons/typing_classes_generator/tests",
+            stub_mode=True,
+            generate_all_classes=True,
+        )
+        with self.mock_get_addon_package_name(), self.mock_get_addon_folder_path():
+            generator.generate("fake_module_1")
+            self.assertTrue(self.class_file_path.exists())
+            self.assertTrue(self.stub_file_path.exists())
+            with open(self.class_file_path, "r") as models_file:
+                models_file_content = models_file.read()
+                self.assertNotEqual(self._models_file_content(), models_file_content)
             shutil.move(str(self.stub_file_path), str(self.class_file_path))
             self._test_models_typing()
 
     def _test_models_typing(self):
         importlib.reload(models_typing)
+        module_member_names = dict(inspect.getmembers(models_typing)).keys()
+        self.assertGreater(len(module_member_names), 2)
+        self.assertIn("ResCountry", module_member_names)
+        self.assertIn("FakeModel1", module_member_names)
         members = dict(models_typing.FakeModel1.__dict__)
         # Testing class declaration
         self.assertEqual(
