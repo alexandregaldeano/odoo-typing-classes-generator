@@ -22,23 +22,34 @@ $ odoo-typing-classes-generator --help
 ## Usage: Generating the Typing Classes
 
 ```bash
-$ odoo-typing-classes-generator --odoo-path /path/to/odoo --module-path /path/to/module --output-file /path/to/output/file.py
+$ odoo-typing-classes-generator --modules=foobar --addons-path=odoo/addons
 ```
+
+This command will create the following files within the `odoo/addons/foobar` folder:
+
+- `typing/`
+  - `__init__.py`;
+  - `base.py`: containing the three base Model classes in Odoo;
+  - `base.pyi`: containing the detailed definitions;
+  - `models.py`: either empty, or only containing the classes names depending on options; and
+  - `models.pyi`: containing the detailed definitions of all Odoo models based on the module and its dependencies.
 
 ### [Required] `--modules TEXT`
 
-Comma-separated list of Comma-separated list of Odoo modules to generate
-typing classes for.
-Typing classes
+Comma-separated list of Comma-separated list of Odoo modules to generate the typing classes for.
 
 ### [Required] `--addons-path TEXT`
 
 Path where the modules are located, relative to the
 current working directory.
 
-### [Flag] `--stub-mode`
+### [Flag] `--generate-all-classes`
 
-If set, the definitions will be put in the stub files `typing/models.pyi`.
+When set, the `typing/models.py` files will be created with all the available classes.
+This is useful if you want to have all the classes available for typing, even if you don't use them all.
+
+Warning: this can create a very large file, depending on the number of models in the module and its dependencies.
+
 By default, the `typing/models.py` files will be created empty if they don't exist yet.
 
 You will have to manually add the classes you want to use for typing, in the format:
@@ -52,14 +63,6 @@ You can check in the models.pyi to see the available classes, all of them have a
 Alternatively, if you have an Odoo model `abc.def_ghi`, the typing class name will be `AbcDefGhi`.
 
 Note: You should most likely avoid to put the stub files into your VCS.
-
-### [Flag] `--generate-all-classes`
-
-This option is only available when `--stub-mode` is set.
-When set, the `typing/models.py` files will be created with all the available classes.
-This is useful if you want to have all the classes available for typing, even if you don't use them all.
-
-Warning: this can create a very large file, depending on the number of models in the module and its dependencies.
 
 ## Usage: Use the Typing Classes In Code
 
@@ -80,21 +83,21 @@ class ResPartner(models.Model):
         ...
 ```
 
-Warning: in stub mode, if you import the typing class directly from the `typing.models` module,
-and you will have no autocomplete suggestion from your IDE\*.
+Warning: if you import the typing class directly from the `typing.models` module,
+you will have no autocomplete suggestion from your IDE\*.
 
 \*I don't know why this is the case, plus I only tested this script with `IntelliJ IDEA 2025.2.1 (Ultimate Edition)`, if you have an explanation, you can add it here, thanks! ❤️
 
 ### In Case of Missing Classes in the `typing/models.py` File
 
-#### With the `--stub-mode` Option and without the `--generate-all-classes` Option
+#### Without the `--generate-all-classes` Option
 
 You can just add them manually.
 If the autocomplete still doesn't work for one or more classes,
 check if they are present in the stub file.
 If they are absent, check if you have missing dependencies in your manifest.
 
-#### Without the `--stub-mode` Option or with the `--generate-all-classes` Option
+#### With the `--generate-all-classes` Option
 
 Check if you have missing dependencies in your manifest.
 
