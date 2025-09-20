@@ -1,7 +1,7 @@
 [project]
 name = "odoo_typing_classes_generator"
 authors = [
-  { name = "Alexandre Galdeano", email = "alexandre.galdeano@foodles.co" },
+  { name = "Alexandre Galdeano", email = "alexandre.galdeano@gmail.com" },
 ]
 description = "Tool to generate Odoo model type classes for better IDE support"
 readme = "README.md"
@@ -50,6 +50,8 @@ build-backend = "setuptools.build_meta"
 find = {}
 
 [tool.setuptools_scm]
+version_scheme = "post-release"
+local_scheme = "no-local-version"
 
 [tool.uv.sources]
 odoo = { git = "git+https://github.com/odoo/odoo.git", branch = "14.0" }
