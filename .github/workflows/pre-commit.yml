@@ -3,10 +3,10 @@ name: pre-commit
 on:
   push:
     branches:
-      - main
+      - "14.0"
   pull_request:
     branches:
-      - main
+      - "14.0"
   merge_group:
 
 concurrency:
