@@ -3,7 +3,7 @@ name: tests
 on:
   push:
     branches:
-      - main
+      - "14.0"
   pull_request:
   merge_group:
 
