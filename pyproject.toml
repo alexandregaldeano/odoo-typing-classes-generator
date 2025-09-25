@@ -9,23 +9,21 @@ keywords = ["odoo", "modules", "addons", "typing"]
 license = { file = "LICENSE" }
 classifiers = [
   "License :: OSI Approved :: GNU Affero General Public License v3",
-  "Programming Language :: Python :: 3.8",
-  "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
-  "Framework :: Odoo :: 14.0",
+  "Framework :: Odoo :: 17.0",
 ]
 dependencies = [
   "click>=8.0",
   "psycopg2>=2.9.10",
-  "python-dateutil>=2.7.3",
+  "python-dateutil>=2.8.0",
   "pypdf2>=1.26.0",
-  "urllib3>=1.25.11",
-  "lxml>=4.5.0, <4.9",
-  "werkzeug>=0.16.1",
+  "urllib3>=1.26.5",
+  "lxml>=4.8.0, <4.9",
+  "werkzeug>=2.0.0",
 
   "odoo",
 ]
-requires-python = ">=3.8, <3.11"
+requires-python = ">=3.10, <3.11"
 dynamic = ["version"]
 
 [project.urls]
@@ -45,7 +43,7 @@ dev-dependencies = [
 ]
 
 [build-system]
-requires = ["setuptools>=64", "setuptools_scm[toml]>=6.2"]
+requires = ["setuptools>=69", "setuptools_scm[toml]>=6.2"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages]
@@ -56,7 +54,7 @@ version_scheme = "post-release"
 local_scheme = "no-local-version"
 
 [tool.uv.sources]
-odoo = { git = "git+https://github.com/odoo/odoo.git", branch = "14.0" }
+odoo = { git = "git+https://github.com/odoo/odoo.git", branch = "17.0" }
 
 [tool.ruff.lint.extend-per-file-ignores]
 "odoo_typing_classes_generator/tests/fake_module_1/*" = ["F401"]
