@@ -48,20 +48,6 @@ class ImportData:
             import_str += f" as {self.alias}"
         return import_str
 
-    @classmethod
-    def model_import(cls) -> "ImportData":
-        return ImportData(
-            package_name=".base",
-            class_name="AbstractModel, Model, TransientModel",
-        )
-
-    @classmethod
-    def typing_union_import(cls) -> "ImportData":
-        return ImportData(
-            package_name="typing",
-            class_name="Union",
-        )
-
     def __hash__(self) -> int:
         return hash((self.package_name, self.class_name, self.alias))
 
