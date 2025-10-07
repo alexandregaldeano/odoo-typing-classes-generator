@@ -236,20 +236,14 @@ class Generator:
                 model,
                 function_name,
             )
-            if isinstance(attr, classmethod):
-                function_data.is_class_method = True
-                if not function_data.args:
-                    function_data.args.append(FunctionArgumentData(name="cls"))
-            elif isinstance(attr, staticmethod):
-                function_data.is_static_method = True
-            signature = inspect.signature(function)
+            function_data.is_class_method = isinstance(attr, classmethod)
+            function_data.is_static_method = isinstance(attr, staticmethod)
+            # Gets the unbound function to get the correct signature
+            if hasattr(function, "__func__"):
+                signature = inspect.signature(function.__func__)
+            else:
+                signature = inspect.signature(function)
             for arg_index, (arg_name, arg) in enumerate(signature.parameters.items()):
-                if (
-                    arg_index == 0
-                    and arg_name == "cls"
-                    and function_data.is_class_method
-                ):
-                    continue
                 if arg.annotation is not inspect.Parameter.empty:
                     function_argument_data = FunctionArgumentData(
                         name=arg_name,
