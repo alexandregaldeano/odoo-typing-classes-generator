@@ -69,27 +69,6 @@ class Generator:
         ] = defaultdict(set)
         self.modules_to_scan = {"models", "wizards"}
         self.merged_models_data_by_odoo_model_name: Dict[str, MergedModelData] = {}
-        self.fields_to_ignore: Set[str] = set()
-        self.functions_to_ignore: Set[str] = set()
-        for module in [models.AbstractModel, models.Model, models.TransientModel]:
-            self.fields_to_ignore |= {
-                field_name
-                for field_name, field in inspect.getmembers(module)
-                if not (
-                    (field_name.startswith("__") and field_name.endswith("__"))
-                    or inspect.isfunction(field)
-                    or inspect.ismethod(field)
-                )
-            }
-            self.functions_to_ignore |= {
-                function_name
-                for function_name, _function in inspect.getmembers(
-                    module,
-                    lambda member: (
-                        inspect.isfunction(member) or inspect.ismethod(member)
-                    ),
-                )
-            }
 
     def generate(self, addon_name: str):
         # List of models.Model defined in the addon
@@ -191,8 +170,6 @@ class Generator:
             model,
             Generator.is_member_odoo_field,
         ):
-            if field_name in self.fields_to_ignore:
-                continue
             field_data = self._get_field_data(
                 odoo_model_name,
                 field_name,
@@ -217,8 +194,6 @@ class Generator:
         for function_name, function in inspect.getmembers(
             model, Generator.is_member_function
         ):
-            if function_name in self.functions_to_ignore:
-                continue
             # We want to ignore name-mangled functions
             if not function_name.endswith("__") and "__" in function_name:
                 continue
@@ -508,7 +483,7 @@ class Generator:
         return class_file_content
 
     def _generate_stub_file_content(self) -> str:
-        with open(self.assets_path / "template.pyi", "r") as template_stub_file:
+        with open(self.assets_path / "template.py", "r") as template_stub_file:
             stub_file_content = template_stub_file.read()
         all_import_lines: Set[str] = set()
         all_stub_definitions: List[str] = []
