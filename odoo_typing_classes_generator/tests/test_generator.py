@@ -14,10 +14,7 @@ from unittest import mock, TestCase
 from odoo_typing_classes_generator.core.generator import (
     Generator as TypingClassesGenerator,
 )
-from odoo_typing_classes_generator.tests.fake_module_1.typing import (
-    base as base_typing,
-    models as models_typing,
-)
+from odoo_typing_classes_generator.tests.fake_module_1 import typing as models_typing
 
 
 class TestGenerator(TestCase):
@@ -26,14 +23,15 @@ class TestGenerator(TestCase):
         cls.typing_folder_path = Path(
             "odoo_typing_classes_generator/tests/fake_module_1/typing"
         )
-        cls.class_file_path = cls.typing_folder_path / "models.py"
-        cls.stub_file_path = cls.typing_folder_path / "models.pyi"
+        cls.class_file_path = cls.typing_folder_path / "__init__.py"
+        cls.stub_file_path = cls.typing_folder_path / "__init__.pyi"
 
     def _models_file_content(self):
         return textwrap.dedent(
             """\
             class ResCountry:
                 pass
+
 
             class FakeModel1:
                 pass
@@ -98,6 +96,7 @@ class TestGenerator(TestCase):
                 self.assertEqual(self._models_file_content(), models_file_content)
             shutil.move(str(self.stub_file_path), str(self.class_file_path))
             self._test_models_typing()
+        shutil.move(str(self.class_file_path), str(self.stub_file_path))
 
     def test_load_models_data_generate_all_classes(self):
         generator = TypingClassesGenerator(
@@ -125,7 +124,7 @@ class TestGenerator(TestCase):
         self.assertEqual(
             members["__orig_bases__"],
             (
-                base_typing.Model[
+                models_typing.Model[
                     Union[ForwardRef("FakeModel1"), ForwardRef("ResPartner")]
                 ],
             ),

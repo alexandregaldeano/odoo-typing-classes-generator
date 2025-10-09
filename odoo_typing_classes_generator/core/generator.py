@@ -3,7 +3,6 @@ import datetime
 import importlib
 import inspect
 import logging
-import shutil
 import textwrap
 from collections import defaultdict
 from pathlib import Path
@@ -70,27 +69,6 @@ class Generator:
         ] = defaultdict(set)
         self.modules_to_scan = {"models", "wizards"}
         self.merged_models_data_by_odoo_model_name: Dict[str, MergedModelData] = {}
-        self.fields_to_ignore: Set[str] = set()
-        self.functions_to_ignore: Set[str] = set()
-        for module in [models.AbstractModel, models.Model, models.TransientModel]:
-            self.fields_to_ignore |= {
-                field_name
-                for field_name, field in inspect.getmembers(module)
-                if not (
-                    (field_name.startswith("__") and field_name.endswith("__"))
-                    or inspect.isfunction(field)
-                    or inspect.ismethod(field)
-                )
-            }
-            self.functions_to_ignore |= {
-                function_name
-                for function_name, _function in inspect.getmembers(
-                    module,
-                    lambda member: (
-                        inspect.isfunction(member) or inspect.ismethod(member)
-                    ),
-                )
-            }
 
     def generate(self, addon_name: str):
         # List of models.Model defined in the addon
@@ -183,10 +161,7 @@ class Generator:
             inherited_model_names=set(Generator.get_inherits(model)),
             field_data_by_name={},
             function_data_by_name={},
-            imports={
-                ImportData.model_import(),
-                ImportData.typing_union_import(),
-            },
+            imports=set(),
             abstract=model._abstract,
             transient=model._transient,
         )
@@ -195,8 +170,6 @@ class Generator:
             model,
             Generator.is_member_odoo_field,
         ):
-            if field_name in self.fields_to_ignore:
-                continue
             field_data = self._get_field_data(
                 odoo_model_name,
                 field_name,
@@ -221,8 +194,6 @@ class Generator:
         for function_name, function in inspect.getmembers(
             model, Generator.is_member_function
         ):
-            if function_name in self.functions_to_ignore:
-                continue
             # We want to ignore name-mangled functions
             if not function_name.endswith("__") and "__" in function_name:
                 continue
@@ -240,20 +211,14 @@ class Generator:
                 model,
                 function_name,
             )
-            if isinstance(attr, classmethod):
-                function_data.is_class_method = True
-                if not function_data.args:
-                    function_data.args.append(FunctionArgumentData(name="cls"))
-            elif isinstance(attr, staticmethod):
-                function_data.is_static_method = True
-            signature = inspect.signature(function)
+            function_data.is_class_method = isinstance(attr, classmethod)
+            function_data.is_static_method = isinstance(attr, staticmethod)
+            # Gets the unbound function to get the correct signature
+            if hasattr(function, "__func__"):
+                signature = inspect.signature(function.__func__)
+            else:
+                signature = inspect.signature(function)
             for arg_index, (arg_name, arg) in enumerate(signature.parameters.items()):
-                if (
-                    arg_index == 0
-                    and arg_name == "cls"
-                    and function_data.is_class_method
-                ):
-                    continue
                 if arg.annotation is not inspect.Parameter.empty:
                     function_argument_data = FunctionArgumentData(
                         name=arg_name,
@@ -482,10 +447,7 @@ class Generator:
         typing_folder = self.get_addon_folder_path(addon_name) / "typing"
         typing_folder.mkdir(parents=False, exist_ok=True)
 
-        shutil.copy(self.assets_path / "base.py", typing_folder / "base.py")
-        shutil.copy(self.assets_path / "base.pyi", typing_folder / "base.pyi")
-
-        models_path = typing_folder / "models.py"
+        models_path = typing_folder / "__init__.py"
         if self.generate_all_classes:
             with open(models_path, "w") as models_file:
                 models_file.write(self._generate_class_file_content())
@@ -501,16 +463,9 @@ class Generator:
                     )
                 )
 
-        models_stubs_path = typing_folder / "models.pyi"
+        models_stubs_path = typing_folder / "__init__.pyi"
         with open(models_stubs_path, "w") as models_stubs_file:
             models_stubs_file.write(self._generate_stub_file_content())
-
-        init_path = typing_folder / "__init__.py"
-        with open(init_path, "w") as init_file:
-            init_file.write(self._generate_init_file_content())
-
-    def _generate_init_file_content(self) -> str:
-        return "# This file is auto-generated by Odoo Typing Classes Generator\n"
 
     def _generate_class_file_content(self) -> str:
         class_file_content = textwrap.dedent(
@@ -528,9 +483,8 @@ class Generator:
         return class_file_content
 
     def _generate_stub_file_content(self) -> str:
-        stub_file_content = (
-            "# This file is auto-generated by Odoo Typing Classes Generator\n"
-        )
+        with open(self.assets_path / "template.py", "r") as template_stub_file:
+            stub_file_content = template_stub_file.read()
         all_import_lines: Set[str] = set()
         all_stub_definitions: List[str] = []
         model_class_names: Set[str] = set()
@@ -541,6 +495,12 @@ class Generator:
             )
             all_import_lines.update(import_lines)
             all_stub_definitions.append(stub_definition)
-        stub_file_content += "\n".join(sorted(all_import_lines)) + "\n\n"
-        stub_file_content += "\n\n".join(sorted(all_stub_definitions))
+        stub_file_content = stub_file_content.replace(
+            "# odoo-typing-classes-generator: imports-insertion-point",
+            "\n".join(sorted(all_import_lines)) + "\n",
+        )
+        stub_file_content = stub_file_content.replace(
+            "# odoo-typing-classes-generator: classes-insertion-point",
+            "\n\n".join(sorted(all_stub_definitions)),
+        )
         return stub_file_content

@@ -1,7 +1,9 @@
 import dataclasses
+import inspect
 import keyword
 import logging
 import re
+from collections import defaultdict
 from typing import (
     Any,
     Dict,
@@ -16,7 +18,65 @@ from typing import (
 
 from odoo.tools import ConstantMapping
 
+from ..assets import template as models_typing
+
 _logger = logging.getLogger(__name__)
+
+
+def _get_field_names_to_ignore_by_class() -> Dict[type, Set[str]]:
+    to_ignore_by_class = defaultdict(set)
+    for module in [
+        models_typing.AbstractModel,
+        models_typing.Model,
+        models_typing.TransientModel,
+    ]:
+        to_ignore_by_class[module] |= {
+            field_name
+            for field_name, field in inspect.getmembers(module)
+            if not (
+                (field_name.startswith("__") and field_name.endswith("__"))
+                or inspect.isfunction(field)
+                or inspect.ismethod(field)
+            )
+        }
+    to_ignore_by_class[models_typing.TransientModel] |= to_ignore_by_class[
+        models_typing.AbstractModel
+    ]
+    to_ignore_by_class[models_typing.TransientModel] |= to_ignore_by_class[
+        models_typing.AbstractModel
+    ]
+    return dict(to_ignore_by_class)
+
+
+def _get_function_names_to_ignore_by_class() -> Dict[type, Set[str]]:
+    to_ignore_by_class = defaultdict(set)
+    for module in [
+        models_typing.AbstractModel,
+        models_typing.Model,
+        models_typing.TransientModel,
+    ]:
+        to_ignore_by_class[module] |= {
+            function_name
+            for function_name, _function in inspect.getmembers(
+                module,
+                lambda member: (inspect.isfunction(member) or inspect.ismethod(member)),
+            )
+        }
+    to_ignore_by_class[models_typing.TransientModel] |= to_ignore_by_class[
+        models_typing.AbstractModel
+    ]
+    to_ignore_by_class[models_typing.TransientModel] |= to_ignore_by_class[
+        models_typing.AbstractModel
+    ]
+    return dict(to_ignore_by_class)
+
+
+field_names_to_ignore_by_class: Dict[
+    type, Set[str]
+] = _get_field_names_to_ignore_by_class()
+function_names_to_ignore_by_class: Dict[
+    type, Set[str]
+] = _get_function_names_to_ignore_by_class()
 
 
 def _snake_case_to_pascal_case(snake_case_str: str) -> str:
@@ -47,20 +107,6 @@ class ImportData:
         if self.alias:
             import_str += f" as {self.alias}"
         return import_str
-
-    @classmethod
-    def model_import(cls) -> "ImportData":
-        return ImportData(
-            package_name=".base",
-            class_name="AbstractModel, Model, TransientModel",
-        )
-
-    @classmethod
-    def typing_union_import(cls) -> "ImportData":
-        return ImportData(
-            package_name="typing",
-            class_name="Union",
-        )
 
     def __hash__(self) -> int:
         return hash((self.package_name, self.class_name, self.alias))
@@ -198,7 +244,7 @@ class FunctionData:
         if self.type:
             function_str += f" -> {self.type.serialize()}"
         function_str = re.sub(escape_pattern, r'"\1"', function_str)
-        function_str += ":\n        ...\n"
+        function_str += ":\n        pass\n"
         return function_str
 
 
@@ -294,16 +340,17 @@ class ModelData:
             for import_data in self.imports
             if import_data.class_name not in import_classes_to_ignore
         }
-        base_class = "Model"
         if self.transient:
-            base_class = "TransientModel"
+            base_class = models_typing.TransientModel
         elif self.abstract:
-            base_class = "AbstractModel"
+            base_class = models_typing.AbstractModel
+        else:
+            base_class = models_typing.Model
+        field_names_to_ignore = set(field_names_to_ignore_by_class[base_class])
+        function_names_to_ignore = set(function_names_to_ignore_by_class[base_class])
         inherited_classes = [
             f'"{self.unique_class_name}"',
         ]
-        field_names_to_ignore = set()
-        function_names_to_ignore = set()
         for inherited_model_name in sorted(
             self.inherited_model_names - {self.odoo_model_name}
         ):
@@ -315,7 +362,7 @@ class ModelData:
                 field_names_to_ignore.add(field_name)
             for function_name in inherited_model_data.function_data_by_name:
                 function_names_to_ignore.add(function_name)
-        class_definition = f"class {self.unique_class_name}({base_class}["
+        class_definition = f"class {self.unique_class_name}({base_class.__name__}["
         if len(inherited_classes) == 1:
             class_definition += inherited_classes[0]
         else:
