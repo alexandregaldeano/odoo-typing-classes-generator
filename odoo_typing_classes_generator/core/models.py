@@ -30,20 +30,13 @@ def _get_field_names_to_ignore_by_class() -> Dict[type, Set[str]]:
         models_typing.Model,
         models_typing.TransientModel,
     ]:
-        to_ignore_by_class[module] |= {
-            field_name
-            for field_name, field in inspect.getmembers(module)
-            if not (
-                (field_name.startswith("__") and field_name.endswith("__"))
-                or inspect.isfunction(field)
-                or inspect.ismethod(field)
-            )
-        }
-    to_ignore_by_class[models_typing.TransientModel] |= to_ignore_by_class[
+        to_ignore_by_class[module] |= set(module.__annotations__.keys())
+    # Inherit the fields from parent classes
+    to_ignore_by_class[models_typing.Model] |= to_ignore_by_class[
         models_typing.AbstractModel
     ]
     to_ignore_by_class[models_typing.TransientModel] |= to_ignore_by_class[
-        models_typing.AbstractModel
+        models_typing.Model
     ]
     return dict(to_ignore_by_class)
 
@@ -62,11 +55,12 @@ def _get_function_names_to_ignore_by_class() -> Dict[type, Set[str]]:
                 lambda member: (inspect.isfunction(member) or inspect.ismethod(member)),
             )
         }
-    to_ignore_by_class[models_typing.TransientModel] |= to_ignore_by_class[
+    # Inherit the functions from parent classes
+    to_ignore_by_class[models_typing.Model] |= to_ignore_by_class[
         models_typing.AbstractModel
     ]
     to_ignore_by_class[models_typing.TransientModel] |= to_ignore_by_class[
-        models_typing.AbstractModel
+        models_typing.Model
     ]
     return dict(to_ignore_by_class)
 

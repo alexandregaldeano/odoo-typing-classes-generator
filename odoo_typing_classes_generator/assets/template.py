@@ -4,27 +4,28 @@ from datetime import datetime
 from typing import (
     Any,
     Callable,
-    Collection,
     Generic,
     Iterator,
     List,
     Optional,
-    Set,
     Tuple,
     TypeVar,
     Union,
+    Dict,
+    Collection,
+    Set,
 )
-
-from dateutil.relativedelta import relativedelta
-from urllib3.connectionpool import HTTPConnectionPool
 
 from odoo.api import Environment
 from odoo.fields import Field
 from odoo.sql_db import Cursor
+from odoo.tools import Query, SQL
+from urllib3.connectionpool import HTTPConnectionPool
 
 # odoo-typing-classes-generator: imports-insertion-point
 
 T = TypeVar("T")
+L = TypeVar("L")
 
 Domain = List[Union[str, tuple]]
 
@@ -35,12 +36,6 @@ class AbstractModel(Generic[T]):
     id: int
     ids: List[int]
     write_date: datetime
-
-    @classmethod
-    def _browse(
-        cls, env: Environment, ids: Tuple[int], prefetch_ids: Collection[int]
-    ) -> T:
-        pass
 
     @classmethod
     def _build_model(cls, pool: HTTPConnectionPool, cr: Cursor):
@@ -55,19 +50,11 @@ class AbstractModel(Generic[T]):
         pass
 
     @classmethod
-    def _build_model_check_parent(model_class, cls, parent_class):  # noqa: N804
+    def _build_model_check_parent(model_class, cls, parent_class):
         pass
 
     @classmethod
     def _init_constraints_onchanges(cls, foo: Any = None):
-        pass
-
-    @classmethod
-    def _patch_method(cls, name: str, method: Callable):
-        pass
-
-    @classmethod
-    def _revert_method(cls, name: str):
         pass
 
     @classmethod
@@ -108,7 +95,9 @@ class AbstractModel(Generic[T]):
     def __int__(self) -> int:
         pass
 
-    def __init__(self, pool: HTTPConnectionPool, cr: Cursor):
+    def __init__(
+        self, env: Environment, ids: List[int], prefetch_ids: Optional[List[int]] = None
+    ):
         pass
 
     def __iter__(self) -> Iterator[T]:
@@ -135,6 +124,9 @@ class AbstractModel(Generic[T]):
     def __repr__(self) -> str:
         pass
 
+    def __reversed__(self) -> tuple:
+        pass
+
     def __setitem__(self, key: Any, value: Any):
         pass
 
@@ -150,16 +142,23 @@ class AbstractModel(Generic[T]):
     def _add_inherited_fields(self) -> None:
         pass
 
-    def _add_magic_fields(self) -> None:
+    def _add_missing_default_values(self, values: dict) -> dict:
         pass
 
-    def _add_missing_default_values(self, values: dict) -> dict:
+    def _add_precomputed_values(self, vals_list: List[dict]) -> None:
         pass
 
     def _add_sql_constraints(self) -> None:
         pass
 
-    def _apply_ir_rules(self, query, mode: str = "read"):
+    def _apply_ir_rules(self, query, mode: str = "read") -> None:
+        pass
+
+    # TODO
+    def _apply_onchange_methods(self, field_name, result):
+        pass
+
+    def _as_query(self, ordered: bool = True) -> Query:
         pass
 
     def _auto_init(self) -> None:
@@ -168,10 +167,16 @@ class AbstractModel(Generic[T]):
     def _check_company(self, fnames: Optional[List[str]] = None) -> None:
         pass
 
-    def _check_concurrency(self) -> None:
+    def _check_company_domain(
+        self,
+        companies: Union["ResCompany", Collection[int]],  # noqa: F821
+    ) -> Domain:
         pass
 
     def _check_m2m_recursion(self, field_name: str) -> bool:
+        pass
+
+    def _check_parent_path(self) -> None:
         pass
 
     def _check_qorder(self, word: str) -> bool:
@@ -203,13 +208,9 @@ class AbstractModel(Generic[T]):
     def _create(self, data_list: List[dict]) -> T:
         pass
 
-    def _create_parent_columns(self) -> None:
-        pass
-
-    def _dependent_fields(self, field: Field) -> Iterator[Field]:
-        pass
-
-    def _execute_sql(self) -> None:
+    def _determine_fields_to_fetch(
+        self, field_names: Optional[List[str]], ignore_when_in_cache: bool = False
+    ) -> List[Field]:
         pass
 
     def _export_rows(
@@ -229,19 +230,27 @@ class AbstractModel(Generic[T]):
     def _fetch_field(self, field: Field) -> None:
         pass
 
-    def _fields_view_get(
-        self,
-        view_id: Optional[int] = None,
-        view_type: str = "form",
-        toolbar: bool = False,
-        submenu: bool = False,
-    ) -> dict:
+    # TODO
+    def _fetch_query(self, query, fields):
+        pass
+
+    def _field_properties_to_sql(
+        self, alias: str, fname: str, property_name: str, query: Query
+    ) -> SQL:
+        pass
+
+    def _field_to_sql(
+        self, alias: str, fname: str, query: Optional[Query] = None
+    ) -> SQL:
         pass
 
     def _filter_access_rules(self, operation: str) -> T:
         pass
 
     def _filter_access_rules_python(self, operation: str) -> T:
+        pass
+
+    def _flush(self, fnames: Optional[List[str]] = None):
         pass
 
     def _flush_search(
@@ -254,51 +263,11 @@ class AbstractModel(Generic[T]):
         pass
 
     # TODO
-    def _generate_m2o_order_by(
-        self, alias, order_field, query, reverse_direction, seen
-    ):
-        pass
-
-    # TODO
     def _generate_order_by(self, order_spec, query):
         pass
 
     # TODO
-    def _generate_order_by_inner(
-        self, alias, order_spec, query, reverse_direction=False, seen=None
-    ):
-        pass
-
-    # TODO
-    def _generate_translated_field(self, table_alias, field, query):
-        pass
-
-    # TODO
-    def _get_default_calendar_view(self):
-        pass
-
-    # TODO
-    def _get_default_form_view(self):
-        pass
-
-    # TODO
-    def _get_default_graph_view(self):
-        pass
-
-    # TODO
-    def _get_default_kanban_view(self):
-        pass
-
-    # TODO
-    def _get_default_pivot_view(self):
-        pass
-
-    # TODO
-    def _get_default_search_view(self):
-        pass
-
-    # TODO
-    def _get_default_tree_view(self):
+    def _get_base_lang(self):
         pass
 
     # TODO
@@ -307,10 +276,6 @@ class AbstractModel(Generic[T]):
 
     # TODO
     def _get_placeholder_filename(self, field=None):
-        pass
-
-    # TODO
-    def _get_xml_ids(self):
         pass
 
     # TODO
@@ -326,15 +291,15 @@ class AbstractModel(Generic[T]):
         pass
 
     # TODO
-    def _inherits_join_add(self, current_model, parent_model_name, query):
-        pass
-
-    # TODO
     def _inherits_join_calc(self, alias, fname, query):
         pass
 
     # TODO
     def _init_column(self, column_name):
+        pass
+
+    # TODO
+    def _invalidate_cache(self, fnames=None, ids=None):
         pass
 
     # TODO
@@ -354,11 +319,11 @@ class AbstractModel(Generic[T]):
         pass
 
     # TODO
-    def _mapped_cache(self, name_seq):
+    def _mapped_func(self, func):
         pass
 
     # TODO
-    def _mapped_func(self, func):
+    def _modified(self, fields, create):
         pass
 
     # TODO
@@ -366,17 +331,21 @@ class AbstractModel(Generic[T]):
         pass
 
     # TODO
-    def _name_search(
-        self, name="", args=None, operator="ilike", limit=100, name_get_uid=None
-    ):
+    def _name_search(self, name="", args=None, operator="ilike", limit=100):
         pass
 
-    # TODO
-    def _onchange_eval(self, field_name, onchange, result):
+    def _order_field_to_sql(
+        self, alias: str, field_name: str, direction: SQL, nulls: SQL, query: Query
+    ) -> SQL:
         pass
 
-    # TODO
-    def _onchange_spec(self, view_info=None):
+    def _order_to_sql(
+        self,
+        order: str,
+        query: Query,
+        alias: (str | None) = None,
+        reverse: bool = False,
+    ) -> SQL:
         pass
 
     # TODO
@@ -408,15 +377,36 @@ class AbstractModel(Generic[T]):
         pass
 
     # TODO
+    def _prepare_create_values(self, vals_list):
+        pass
+
+    # TODO
     def _prepare_setup(self):
         pass
 
     # TODO
-    def _read(self, fields):
+    def _read_format(self, fnames, load="_classic_read"):
         pass
 
     # TODO
-    def _read_format(self, fnames, load="_classic_read"):
+    def _read_group(
+        self,
+        domain,
+        groupby=(),
+        aggregates=(),
+        having=(),
+        offset=0,
+        limit=None,
+        order=None,
+    ):
+        pass
+
+    # TODO
+    def _read_group_check_field_access_rights(self, field_names):
+        pass
+
+    # TODO
+    def _read_group_empty_value(self, spec):
         pass
 
     # TODO
@@ -428,9 +418,7 @@ class AbstractModel(Generic[T]):
         self,
         domain,
         groupby,
-        remaining_groupbys,
-        aggregated_fields,
-        count_field,
+        annoted_aggregates,
         read_group_result,
         read_group_order=None,
     ):
@@ -441,42 +429,67 @@ class AbstractModel(Generic[T]):
         self,
         data,
         groupby,
-        aggregated_fields,
-        annotated_groupbys,
-        interval=relativedelta(months=1),  # noqa: B008
+        annoted_aggregates,
+        fill_from=False,
+        fill_to=False,
+        min_groups=False,
     ):
         pass
 
     # TODO
-    def _read_group_format_result(self, data, annotated_groupbys, groupby, domain):
+    def _read_group_format_result(self, rows_dict, lazy_groupby):
         pass
 
     # TODO
-    def _read_group_prepare(
-        self, orderby, aggregated_fields, annotated_groupbys, query
-    ):
+    def _read_group_format_result_properties(self, rows_dict, group):
         pass
 
     # TODO
-    def _read_group_prepare_data(self, key, value, groupby_dict):
+    def _read_group_get_annoted_groupby(self, groupby, lazy):
+        pass
+
+    def _read_group_groupby(
+        self, groupby_spec: str, query: Query
+    ) -> tuple[SQL, list[str]]:
+        pass
+
+    def _read_group_having(
+        self, having_domain: list, query: Query
+    ) -> tuple[SQL, list[str]]:
+        pass
+
+    def _read_group_orderby(
+        self, order: str, groupby_terms: dict[str, SQL], query: Query
+    ) -> tuple[SQL, SQL, list[str]]:
         pass
 
     # TODO
-    def _read_group_process_groupby(self, gb, query):
+    def _read_group_postprocess_aggregate(self, aggregate_spec, raw_values):
         pass
 
     # TODO
-    def _read_group_raw(
-        self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True
-    ):
+    def _read_group_postprocess_groupby(self, groupby_spec, raw_values):
         pass
 
-    # TODO
-    def _read_group_resolve_many2one_fields(self, data, fields):
+    def _read_group_select(
+        self, aggregate_spec: str, query: Query
+    ) -> tuple[SQL, list[str]]:
         pass
 
     # TODO
     def _rec_name_fallback(self):
+        pass
+
+    # TODO
+    def _recompute_field(self, field, ids=None):
+        pass
+
+    # TODO
+    def _recompute_model(self, fnames=None):
+        pass
+
+    # TODO
+    def _recompute_recordset(self, fnames=None):
         pass
 
     # TODO
@@ -486,11 +499,10 @@ class AbstractModel(Generic[T]):
     # TODO
     def _search(
         self,
-        args,
+        domain,
         offset=0,
         limit=None,
         order=None,
-        count=False,
         access_rights_uid=None,
     ):
         pass
@@ -535,128 +547,87 @@ class AbstractModel(Generic[T]):
     def _write(self, vals):
         pass
 
-    # TODO
-    def action_archive(self):
+    def action_archive(self) -> T:
         pass
 
-    # TODO
-    def action_unarchive(self):
+    def action_unarchive(self) -> T:
         pass
 
     def browse(self, ids: Union[int, List[int]]) -> T:
         pass
 
-    # TODO
-    def check_access_rights(self, operation, raise_exception=True):
+    def check_access_rights(self, operation: str, raise_exception: bool = True) -> bool:
         pass
 
-    # TODO
-    def check_access_rule(self, operation):
+    def check_access_rule(self, operation: str) -> None:
         pass
 
-    # TODO
-    def check_field_access_rights(self, operation, fields):
+    def check_field_access_rights(
+        self, operation: str, fields: Optional[List[str]]
+    ) -> list:
         pass
 
-    # TODO
-    def compute_concurrency_field(self):
+    def concat(self, *args: List[T]) -> T:
         pass
 
-    # TODO
-    def compute_concurrency_field_with_access(self):
+    def copy(self, default: Optional[dict] = None) -> T:
         pass
 
-    # TODO
-    def concat(self, *args):
+    def copy_data(self, default: Optional[dict] = None) -> T:
         pass
 
-    def copy(  # pylint: disable=method-required-super
-        self, default: Optional[dict] = None
-    ) -> T:
+    def copy_multi(self, default: Optional[dict] = None) -> T:
         pass
 
-    # TODO
-    def copy_data(self, default=None):
+    def copy_translations(self, new: T, excluded: Collection[str] = ()) -> None:
         pass
 
-    def copy_translations(
-        old,  # noqa: N805
-        new,
-        excluded=(),
-    ):
+    def create(self, vals_list: Union[List[dict], dict]) -> T:
         pass
 
-    def create(self, vals_list: Union[List[dict], dict]) -> T:  # pylint: disable=method-required-super
+    def default_get(self, fields_list: List[str]) -> Dict[str, Any]:
         pass
 
-    # TODO
-    def default_get(  # pylint: disable=method-required-super
-        self, fields_list
-    ):
-        pass
-
-    # TODO
-    def ensure_one(self):
+    def ensure_one(self) -> T:
         pass
 
     def exists(self) -> T:
         pass
 
-    # TODO
-    def export_data(self, fields_to_export):
+    def export_data(self, fields_to_export: List[str]) -> dict:
         pass
 
-    # TODO
-    def fields_get(self, allfields=None, attributes=None):
+    def fetch(self, field_names: List[str]) -> None:
         pass
 
-    # TODO
-    def fields_get_keys(self):
-        pass
-
-    # TODO
-    def fields_view_get(
+    def fields_get(
         self,
-        view_id=None,
-        view_type="form",
-        toolbar=False,
-        submenu: Union["Model", bool] = False,
-    ):
+        allfields: Optional[List[str]] = None,
+        attributes: Optional[List[str]] = None,
+    ) -> dict:
         pass
 
     def filtered(self, func: Union[Callable[[T], bool], str]) -> T:
         pass
 
-    # TODO
-    def filtered_domain(self, domain):
+    def filtered_domain(self, domain: Optional[Domain]) -> T:
         pass
 
-    # TODO
-    def flush(self, fnames=None, records=None):
+    def flush_model(self, fnames: List[str] = None) -> None:
         pass
 
-    # TODO
-    def get_access_action(self, access_uid=None):
+    def flush_recordset(self, fnames: List[str] = None) -> None:
         pass
 
-    # TODO
-    def get_base_url(self):
+    def get_base_url(self) -> str:
         pass
 
-    # TODO
-    def get_empty_list_help(self, help):
+    def get_external_id(self) -> Dict[str, str]:
         pass
 
-    # TODO
-    def get_external_id(self):
-        pass
-
-    # TODO
-    def get_formview_action(self, access_uid=None):
-        pass
-
-    # TODO
-    def get_formview_id(self, access_uid=None):
+    def get_field_translations(
+        self, field_name: str, langs=None
+    ) -> Tuple[Dict[str, str], Dict[str, Any]]:
         pass
 
     # TODO
@@ -664,31 +635,35 @@ class AbstractModel(Generic[T]):
         pass
 
     # TODO
-    def get_xml_id(self):
+    def get_property_definition(self, full_name: str):
         pass
 
-    # TODO
+    def grouped(self, key: Union[Callable[[T], L], str]) -> Dict[L, T]:
+        pass
+
     def init(self):
         pass
 
-    # TODO
-    def invalidate_cache(self, fnames=None, ids=None):
+    def invalidate_model(
+        self, fnames: Optional[List[str]] = None, flush: bool = True
+    ) -> None:
+        pass
+
+    def invalidate_recordset(
+        self, fnames: Optional[List[str]] = None, flush: bool = True
+    ) -> None:
+        pass
+
+    def load(self, fields: List[str], data: List[List[str]]) -> dict:
+        pass
+
+    def mapped(
+        self, func: Union[Callable[[T], L], str]
+    ) -> Union[List[L], "AbstractModel[L]"]:
         pass
 
     # TODO
-    def load(self, fields, data):
-        pass
-
-    # TODO
-    def load_views(self, views, options=None):
-        pass
-
-    # TODO
-    def mapped(self, func):
-        pass
-
-    # TODO
-    def modified(self, fnames, create=False, before=False):
+    def modified(self, fnames: List[str], create: bool = False, before: bool = False):
         pass
 
     def name_create(self, name: str) -> T:
@@ -706,20 +681,20 @@ class AbstractModel(Generic[T]):
     ) -> List[Tuple[int, str]]:
         pass
 
-    def new(  # pylint: disable=dangerous-default-value
+    def new(
         self,
-        values: dict = {},  # noqa: B006
+        values: Optional[dict] = None,
         origin: Optional["Model"] = None,
         ref: Optional[str] = None,
     ):
         pass
 
     def onchange(
-        self, values: dict, field_name: Union[str, List[str]], field_onchange: dict
+        self, values: dict, field_name: Union[str, List[str]], fields_spec: dict
     ) -> Optional[dict]:
         pass
 
-    def read(  # pylint: disable=method-required-super
+    def read(
         self, fields: Optional[List[str]] = None, load: str = "_classic_read"
     ) -> List[dict]:
         pass
@@ -736,25 +711,26 @@ class AbstractModel(Generic[T]):
     ) -> List[dict]:
         pass
 
-    def recompute(
-        self, fnames: Optional[List[str]] = None, records: Optional["Model"] = None
-    ) -> None:
-        pass
-
-    def refresh(self) -> None:
-        pass
-
     def search(
         self,
-        args: Domain,
+        domain: Domain,
         offset: int = 0,
         limit: Optional[int] = None,
         order: Optional[str] = None,
-        count: bool = False,
     ) -> T:
         pass
 
-    def search_count(self, args: Domain) -> int:
+    def search_fetch(
+        self,
+        domain: Domain,
+        field_names: List[str],
+        offset: int = 0,
+        limit: Optional[int] = None,
+        order: Optional[str] = None,
+    ) -> T:
+        pass
+
+    def search_count(self, domain: Domain, limit: Optional[int] = None) -> int:
         pass
 
     def search_read(
@@ -764,6 +740,7 @@ class AbstractModel(Generic[T]):
         offset: int = 0,
         limit: Optional[int] = None,
         order: Optional[str] = None,
+        **read_kwards,
     ) -> List[dict]:
         pass
 
@@ -776,39 +753,30 @@ class AbstractModel(Generic[T]):
     def toggle_active(self) -> None:
         pass
 
-    def union(  # pylint: disable=method-required-super
-        self, *args: "Model"
-    ) -> None:
+    def union(self, *args: "Model") -> None:
         pass
 
-    def unlink(  # pylint: disable=method-required-super
-        self,
-    ) -> bool:
+    def unlink(self) -> bool:
         pass
 
     def update(self, values: dict) -> None:
         pass
 
+    # TODO
+    def update_field_translations(self, field_name, translations):
+        pass
+
+    # TODO
+    def _update_field_translations(self, field_name, translations, digest=None):
+        pass
+
     def user_has_groups(self, groups: str) -> bool:
         pass
 
-    def view_header_get(
-        self, view_id=None, view_type: str = "form"
-    ) -> Union[str, bool]:
+    def write(self, vals: dict) -> bool:
         pass
 
-    def view_init(self, fields_list: List[str]) -> None:
-        pass
-
-    def write(  # pylint: disable=method-required-super
-        self, vals: dict
-    ) -> bool:
-        pass
-
-    def with_company(
-        self,
-        company: "ResCompany",  # noqa: F821
-    ) -> T:
+    def with_company(self, company: "ResCompany") -> T:  # noqa: F821
         pass
 
     def with_context(self, *args, **kwargs) -> T:
@@ -820,28 +788,24 @@ class AbstractModel(Generic[T]):
     def with_prefetch(self, prefetch_ids: Optional[List[int]] = None) -> T:
         pass
 
-    def with_user(
-        self,
-        user: "ResUsers",  # noqa: F821
-    ) -> T:
+    def with_user(self, user: "ResUsers") -> T:  # noqa: F821
         pass
 
 
 class Model(AbstractModel[T]):
-    pass
+    create_uid: Union["ResUsers", bool]  # noqa: F821
+    display_name: str
+    write_uid: Union["ResUsers", bool]  # noqa: F821
 
 
 class TransientModel(Model[T]):
-    # TODO
-    def _transient_clean_old_rows(self, max_count):
+    def _transient_clean_old_rows(self, max_count: int):
         pass
 
-    # TODO
-    def _transient_clean_rows_older_than(self, seconds):
+    def _transient_clean_rows_older_than(self, seconds: int) -> None:
         pass
 
-    # TODO
-    def _transient_vacuum(self):
+    def _transient_vacuum(self) -> None:
         pass
 
 
