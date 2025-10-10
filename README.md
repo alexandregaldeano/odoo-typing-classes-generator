@@ -63,7 +63,7 @@ class ClassName:
     pass
 ```
 
-You can check in the **init**.pyi to see the available classes, all of them have a field `_name = "[Odoo Model Name]"`
+You can check in the `__init__.pyi` to see the available classes, all of them have a field `_name = "[Odoo Model Name]"`
 you can search for.
 Alternatively, if you have an Odoo model `abc.def_ghi`, the typing class name will be `AbcDefGhi`.
 
