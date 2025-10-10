@@ -593,13 +593,8 @@ name = "odoo-typing-classes-generator"
 source = { editable = "." }
 dependencies = [
     { name = "click" },
-    { name = "lxml" },
     { name = "odoo" },
-    { name = "psycopg2" },
-    { name = "pypdf2" },
-    { name = "python-dateutil" },
     { name = "urllib3" },
-    { name = "werkzeug" },
 ]
 
 [package.dev-dependencies]
@@ -613,13 +608,8 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "click", specifier = ">=8.0" },
-    { name = "lxml", specifier = ">=4.8.0,<4.9" },
     { name = "odoo", git = "https://github.com/odoo/odoo.git?branch=17.0" },
-    { name = "psycopg2", specifier = ">=2.9.10" },
-    { name = "pypdf2", specifier = ">=1.26.0" },
-    { name = "python-dateutil", specifier = ">=2.8.0" },
     { name = "urllib3", specifier = ">=1.26.5" },
-    { name = "werkzeug", specifier = ">=2.0.0" },
 ]
 
 [package.metadata.requires-dev]

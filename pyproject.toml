@@ -12,17 +12,7 @@ classifiers = [
   "Programming Language :: Python :: 3.10",
   "Framework :: Odoo :: 17.0",
 ]
-dependencies = [
-  "click>=8.0",
-  "psycopg2>=2.9.10",
-  "python-dateutil>=2.8.0",
-  "pypdf2>=1.26.0",
-  "urllib3>=1.26.5",
-  "lxml>=4.8.0, <4.9",
-  "werkzeug>=2.0.0",
-
-  "odoo",
-]
+dependencies = ["click>=8.0", "urllib3>=1.26.5", "odoo"]
 requires-python = ">=3.10, <3.11"
 dynamic = ["version"]
 
