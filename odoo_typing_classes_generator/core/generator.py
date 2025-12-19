@@ -15,6 +15,7 @@ from typing import (
     Set,
     Union,
     get_type_hints,
+    Tuple,
 )
 
 from odoo import fields, models
@@ -478,6 +479,7 @@ class Generator:
         all_class_definitions = [
             merged_model_data.get_class_definition()
             for merged_model_data in self.merged_models_data_by_odoo_model_name.values()
+            if merged_model_data.odoo_model_name != "base"
         ]
         class_file_content += "\n\n".join(sorted(all_class_definitions))
         return class_file_content
@@ -485,22 +487,63 @@ class Generator:
     def _generate_stub_file_content(self) -> str:
         with open(self.assets_path / "template.py", "r") as template_stub_file:
             stub_file_content = template_stub_file.read()
-        all_import_lines: Set[str] = set()
         all_stub_definitions: List[str] = []
-        model_class_names: Set[str] = set()
-        for merged_model_data in self.merged_models_data_by_odoo_model_name.values():
-            model_class_names.add(merged_model_data.unique_class_name)
-            import_lines, stub_definition = merged_model_data.get_stub_definition(
+        all_import_lines: Set[str] = set()
+        base_class_definition = ""
+        for merged_model_data in self._get_sorted_merged_models_data():
+            definition = merged_model_data.get_stub_definition(
                 self.merged_models_data_by_odoo_model_name
             )
-            all_import_lines.update(import_lines)
-            all_stub_definitions.append(stub_definition)
+            all_import_lines.update(definition.imports)
+            if merged_model_data.odoo_model_name == "base":
+                base_class_definition = definition.content
+            else:
+                all_stub_definitions.append(
+                    f"{definition.signature}{definition.content}"
+                )
         stub_file_content = stub_file_content.replace(
             "# odoo-typing-classes-generator: imports-insertion-point",
             "\n".join(sorted(all_import_lines)) + "\n",
         )
         stub_file_content = stub_file_content.replace(
+            "    # odoo-typing-classes-generator: base-insertion-point",
+            base_class_definition,
+        )
+        stub_file_content = stub_file_content.replace(
             "# odoo-typing-classes-generator: classes-insertion-point",
-            "\n\n".join(sorted(all_stub_definitions)),
+            "\n\n".join(all_stub_definitions),
         )
         return stub_file_content
+
+    def _get_sorted_merged_models_data(self) -> List[MergedModelData]:
+        merged_models_data = sorted(
+            self.merged_models_data_by_odoo_model_name.values(),
+            key=lambda m: m.odoo_model_name,
+        )
+        while True:
+            merged_models_data, changed = self._sort_merged_models_data(
+                merged_models_data
+            )
+            if not changed:
+                break
+        return merged_models_data
+
+    def _sort_merged_models_data(
+        self, merged_models_data: List[MergedModelData]
+    ) -> Tuple[List[MergedModelData], bool]:
+        for index, model_data in enumerate(merged_models_data):
+            inherited_model_names = model_data.inherited_model_names - {
+                model_data.odoo_model_name
+            }
+            if not inherited_model_names:
+                continue
+            for next_index in range(index + 1, len(merged_models_data)):
+                next_model_data = merged_models_data[next_index]
+                if next_model_data.odoo_model_name not in inherited_model_names:
+                    continue
+                merged_models_data[index], merged_models_data[next_index] = (
+                    merged_models_data[next_index],
+                    merged_models_data[index],
+                )
+                return merged_models_data, True
+        return merged_models_data, False

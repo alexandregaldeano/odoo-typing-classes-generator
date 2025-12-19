@@ -10,10 +10,10 @@ from typing import (
     List,
     Optional,
     Set,
-    Tuple,
     Union,
     get_args,
     get_origin,
+    NamedTuple,
 )
 
 from odoo.tools import ConstantMapping
@@ -21,6 +21,12 @@ from odoo.tools import ConstantMapping
 from ..assets import template as models_typing
 
 _logger = logging.getLogger(__name__)
+
+
+class ClassDefinition(NamedTuple):
+    imports: Set[str]
+    signature: str
+    content: str
 
 
 def _get_field_names_to_ignore_by_class() -> Dict[type, Set[str]]:
@@ -257,7 +263,7 @@ class FieldData:
             ].unique_class_name
             # We cannot use Literal[False] here, because when iterating over the field,
             # the IDE wouldn't know which of the two types the elements have.
-            serialized_type = f'Union["{serialized_type}", bool]'
+            serialized_type = f'Union["{serialized_type}", bool, None]'
         else:
             serialized_type = self.type.serialize()
         field_definition = f"{self.name}: {serialized_type}"
@@ -266,9 +272,6 @@ class FieldData:
                 f"# {field_definition}  # This field name is a Python keyword"
             )
         return f"    {field_definition}"
-
-    def __hash__(self) -> int:
-        return hash((self.name, self.type, self.related))
 
 
 @dataclasses.dataclass
@@ -324,12 +327,12 @@ class ModelData:
     def get_stub_definition(
         self,
         merged_models_data_by_odoo_model_name: Dict[str, "MergedModelData"],
-    ) -> Tuple[Set[str], str]:
+    ) -> ClassDefinition:
         import_classes_to_ignore = {
             model.unique_class_name
             for model in merged_models_data_by_odoo_model_name.values()
         }
-        import_lines: Set[str] = {
+        imports: Set[str] = {
             import_data.serialize()
             for import_data in self.imports
             if import_data.class_name not in import_classes_to_ignore
@@ -342,28 +345,24 @@ class ModelData:
             base_class = models_typing.Model
         field_names_to_ignore = set(field_names_to_ignore_by_class[base_class])
         function_names_to_ignore = set(function_names_to_ignore_by_class[base_class])
-        inherited_classes = [
-            f'"{self.unique_class_name}"',
-        ]
+        inherited_classes = []
         for inherited_model_name in sorted(
             self.inherited_model_names - {self.odoo_model_name}
         ):
             inherited_model_data = merged_models_data_by_odoo_model_name[
                 inherited_model_name
             ]
-            inherited_classes.append(f'"{inherited_model_data.unique_class_name}"')
+            inherited_classes.append(inherited_model_data.unique_class_name)
             for field_name in inherited_model_data.field_data_by_name:
                 field_names_to_ignore.add(field_name)
             for function_name in inherited_model_data.function_data_by_name:
                 function_names_to_ignore.add(function_name)
-        class_definition = f"class {self.unique_class_name}({base_class.__name__}["
-        if len(inherited_classes) == 1:
-            class_definition += inherited_classes[0]
-        else:
-            class_definition += f"Union[{', '.join(inherited_classes)}]"
-        class_definition += "]):\n"
-        class_definition += self._get_class_documentation()
-        class_definition += f'\n    _name = "{self.odoo_model_name}"\n'
+        signature = f"class {self.unique_class_name}("
+        if inherited_classes:
+            signature += f"{', '.join(inherited_classes)}, "
+        signature += f'{base_class.__name__}["{self.unique_class_name}"]):\n'
+        content = self._get_class_documentation()
+        content += f'\n    _name = "{self.odoo_model_name}"\n'
         field_data_by_name = {
             field_name: field_data
             for field_name, field_data in self.field_data_by_name.items()
@@ -375,13 +374,13 @@ class ModelData:
             if function_name not in function_names_to_ignore
         }
         if not field_data_by_name and not function_data_by_name:
-            return import_lines, class_definition
+            return ClassDefinition(imports, signature, content)
         if field_data_by_name:
             field_lines = {
                 field_data.serialize(merged_models_data_by_odoo_model_name)
                 for field_data in field_data_by_name.values()
             }
-            class_definition += "\n" + "\n".join(sorted(field_lines)) + "\n"
+            content += "\n" + "\n".join(sorted(field_lines)) + "\n"
         merged_models_class_names = {
             merged_models_data.unique_class_name
             for merged_models_data in merged_models_data_by_odoo_model_name.values()
@@ -392,14 +391,11 @@ class ModelData:
                 function_data.serialize(escape_pattern)
                 for function_data in function_data_by_name.values()
             }
-            class_definition += "\n" + "\n".join(sorted(function_lines))
-        return import_lines, class_definition
+            content += "\n" + "\n".join(sorted(function_lines))
+        return ClassDefinition(imports, signature, content)
 
     def _get_class_documentation(self) -> str:
         return ""
-
-    def __hash__(self) -> int:
-        return hash(self.unique_class_name)
 
 
 @dataclasses.dataclass

@@ -26,13 +26,8 @@ repository = "https://github.com/alexandregaldeano/odoo-typing-classes-generator
 [project.scripts]
 odoo-typing-classes-generator = "odoo_typing_classes_generator.cli.main:main"
 
-[tool.uv]
-dev-dependencies = [
-  "coverage",
-  "pytest>=8.3.3",
-  "pytest-cov>=3.0.0",
-  "num2words>=0.5.14",
-]
+[dependency-groups]
+dev = ["coverage", "pytest>=8.3.3", "pytest-cov>=3.0.0", "num2words>=0.5.14"]
 
 [build-system]
 requires = ["setuptools>=64", "setuptools_scm[toml]>=6.2"]

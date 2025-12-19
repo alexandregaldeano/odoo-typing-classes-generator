@@ -8,7 +8,15 @@ import shutil
 import textwrap
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Any, Callable, ForwardRef, Generator, List, Union, get_type_hints
+from typing import (
+    Any,
+    Callable,
+    ForwardRef,
+    Generator,
+    List,
+    Union,
+    get_type_hints,
+)
 from unittest import mock, TestCase
 
 from odoo_typing_classes_generator.core.generator import (
@@ -124,9 +132,8 @@ class TestGenerator(TestCase):
         self.assertEqual(
             members["__orig_bases__"],
             (
-                models_typing.Model[
-                    Union[ForwardRef("FakeModel1"), ForwardRef("ResPartner")]
-                ],
+                models_typing.ResPartner,
+                models_typing.Model[ForwardRef("FakeModel1")],
             ),
         )
         self.assertEqual(
@@ -153,7 +160,7 @@ class TestGenerator(TestCase):
         self.assertIn("a_many_to_one_field", member_annotations)
         self.assertEqual(
             member_annotations["a_many_to_one_field"],
-            Union[ForwardRef("ResCompany"), bool],
+            Union[ForwardRef("ResCompany"), bool, None],
         )
         self.assertIn("a_class_method", members)
 

@@ -16,11 +16,10 @@ from typing import (
 )
 
 from dateutil.relativedelta import relativedelta
-from urllib3.connectionpool import HTTPConnectionPool
-
 from odoo.api import Environment
 from odoo.fields import Field
 from odoo.sql_db import Cursor
+from urllib3.connectionpool import HTTPConnectionPool
 
 # odoo-typing-classes-generator: imports-insertion-point
 
@@ -30,6 +29,7 @@ Domain = List[Union[str, tuple]]
 
 
 class AbstractModel(Generic[T]):
+    # odoo-typing-classes-generator: base-insertion-point
     create_date: datetime
     env: Environment
     id: int
@@ -595,8 +595,7 @@ class AbstractModel(Generic[T]):
     ):
         pass
 
-    # TODO
-    def ensure_one(self):
+    def ensure_one(self) -> T:
         pass
 
     def exists(self) -> T:
@@ -620,7 +619,7 @@ class AbstractModel(Generic[T]):
         view_id=None,
         view_type="form",
         toolbar=False,
-        submenu: Union["Model", bool] = False,
+        submenu: Union["Model", bool, None] = False,
     ):
         pass
 
