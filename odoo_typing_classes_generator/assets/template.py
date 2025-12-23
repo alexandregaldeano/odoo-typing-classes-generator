@@ -31,6 +31,7 @@ Domain = List[Union[str, tuple]]
 
 
 class AbstractModel(Generic[T]):
+    # odoo-typing-classes-generator: base-insertion-point
     create_date: datetime
     env: Environment
     id: int
